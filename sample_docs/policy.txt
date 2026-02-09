@@ -1,0 +1,5 @@
+Security Policy (Sample)
+
+All employees must use multi-factor authentication (MFA) for company systems.
+Access to production systems requires manager approval and is logged.
+Incident reports must be submitted within 24 hours of detection.
