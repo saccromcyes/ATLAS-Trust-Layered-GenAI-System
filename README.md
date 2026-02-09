@@ -113,6 +113,40 @@ Open the UI
 Go to:
 
 http://localhost:8501
+
+### Local Dev (without Docker)
+If you don’t have Docker available, you can run the backend and UI locally.
+
+1) Create and activate a virtualenv
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+2) Install backend dependencies
+```bash
+pip install -r backend/requirements.txt
+```
+
+3) Install UI dependencies
+```bash
+pip install -r ui/requirements.txt
+```
+
+4) Start Postgres and Qdrant separately (Docker or local installs)
+- Postgres must be reachable at the host/port in `.env`
+- Qdrant must be reachable at the host/port in `.env`
+
+5) Run the API
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+```
+
+6) Run the UI (point it at the API)
+```bash
+export ATLAS_API_URL=http://localhost:8000
+streamlit run ui/app.py --server.port 8501
+```
 Ingest Documents
 From the UI:
 
@@ -178,5 +212,4 @@ Extendable (rerankers, auth, feedback loop)
 .md
 
 .pdf
-
 
