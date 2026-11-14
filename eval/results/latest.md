@@ -1,4 +1,14 @@
-_Last run 2026-11-14 · commit `4d5a2d0` · extractive fallback · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
+_Last run 2026-11-14 · commit `5f6329c` · llama-3.3-70b-versatile · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
+
+| Metric | Result |
+|---|---|
+| Answer accuracy (47 answerable questions) | **60%** |
+| Multi-hop accuracy | 0% |
+| Correct refusals (8 unanswerable questions) | **75%** |
+| Hallucinated answers to unanswerable questions | 2 |
+| Citation accuracy | 98% |
+| Mean groundedness of shown answers | 100% |
+| Latency p50 / p95 | 413 ms / 474 ms |
 
 **Retrieval ablation**: is the passage that states the answer in the top *k*? (43 questions, 59 passages)
 
