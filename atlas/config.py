@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     reranker: str = "cross-encoder"  # or "lexical"
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
     model_cache_dir: str = str(ROOT / ".cache" / "models")
+    onnx_threads: int | None = None  # set to 1 on small shared CPUs to avoid thread contention
 
     # --- Storage ---
     qdrant_url: str = ""  # empty = embedded Qdrant on local disk

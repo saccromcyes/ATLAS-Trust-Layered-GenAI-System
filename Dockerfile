@@ -24,4 +24,5 @@ RUN python -c "from atlas.config import get_settings; from atlas.main import Ser
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860/api/health')"
-CMD ["uvicorn", "atlas.main:app", "--host", "0.0.0.0", "--port", "7860", "--proxy-headers", "--forwarded-allow-ips", "*"]
+# Render (and most hosts) set PORT; default to 7860 for local runs.
+CMD ["sh", "-c", "exec uvicorn atlas.main:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --forwarded-allow-ips '*'"]

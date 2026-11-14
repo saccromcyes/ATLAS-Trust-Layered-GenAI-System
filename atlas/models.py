@@ -76,10 +76,10 @@ class HashEmbedder:
 class FastEmbedEmbedder:
     """BGE-small (384-d) via FastEmbed/ONNX Runtime."""
 
-    def __init__(self, model_name: str, cache_dir: str):
+    def __init__(self, model_name: str, cache_dir: str, threads: int | None = None):
         from fastembed import TextEmbedding
 
-        self._model = TextEmbedding(model_name=model_name, cache_dir=cache_dir)
+        self._model = TextEmbedding(model_name=model_name, cache_dir=cache_dir, threads=threads)
         self.dim = len(next(iter(self._model.embed(["probe"]))))
 
     def embed_documents(self, texts: list[str]) -> np.ndarray:
@@ -117,10 +117,10 @@ class CrossEncoderReranker:
 
     name = "cross-encoder"
 
-    def __init__(self, model_name: str, cache_dir: str):
+    def __init__(self, model_name: str, cache_dir: str, threads: int | None = None):
         from fastembed.rerank.cross_encoder import TextCrossEncoder
 
-        self._model = TextCrossEncoder(model_name=model_name, cache_dir=cache_dir)
+        self._model = TextCrossEncoder(model_name=model_name, cache_dir=cache_dir, threads=threads)
 
     def score(self, query: str, passages: list[str]) -> list[float]:
         if not passages:
@@ -132,7 +132,7 @@ class CrossEncoderReranker:
 def build_embedder(settings: Settings) -> Embedder:
     if settings.embedder == "fastembed":
         try:
-            return FastEmbedEmbedder(settings.embed_model, settings.model_cache_dir)
+            return FastEmbedEmbedder(settings.embed_model, settings.model_cache_dir, settings.onnx_threads)
         except Exception as exc:  # model download blocked, no disk, etc.
             log.warning("FastEmbed unavailable (%s); falling back to hash embeddings", exc)
     return HashEmbedder()
@@ -141,7 +141,7 @@ def build_embedder(settings: Settings) -> Embedder:
 def build_reranker(settings: Settings) -> Reranker:
     if settings.reranker == "cross-encoder":
         try:
-            return CrossEncoderReranker(settings.rerank_model, settings.model_cache_dir)
+            return CrossEncoderReranker(settings.rerank_model, settings.model_cache_dir, settings.onnx_threads)
         except Exception as exc:
             log.warning("Cross-encoder unavailable (%s); falling back to lexical reranking", exc)
     return LexicalReranker()
