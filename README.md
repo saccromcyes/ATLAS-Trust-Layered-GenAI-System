@@ -1,51 +1,131 @@
-# ATLAS — Trust-Layered GenAI System  
-**Hybrid RAG + Verification + Evaluation**
+# ATLAS — answers that show their evidence
 
-ATLAS is a production-style GenAI application that answers questions over document corpora using **hybrid retrieval**, **citations**, and a **claim-verification layer** to reduce hallucinations and improve trust.
+[![CI](https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System/actions/workflows/ci.yml/badge.svg)](https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/live%20demo-Hugging%20Face-1F3F8F)](https://huggingface.co/spaces/saccromcyes/atlas)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
----
+ATLAS is a retrieval-augmented generation (RAG) system built around one question: **can you trust the answer?**
 
-## Key Features
+- Every sentence cites the passage it came from, and you can click through to read it.
+- After answering, a second model splits the answer into individual claims and checks each one against the evidence. Answers that don't check out are hidden.
+- When the documents don't contain the answer, ATLAS says so instead of guessing, and shows you how close the nearest passage came.
 
-- **Hybrid RAG**
-  - Vector search (Qdrant)
-  - Keyword search (BM25)
-  - Merge + rerank
+**[Try the live demo →](https://huggingface.co/spaces/saccromcyes/atlas)** Ask about the bundled handbook and policies of a fictional drone company, or upload your own PDF.
 
-- **Evidence-based answers**
-  - Stable chunk IDs
-  - Source citations for every answer
+<!-- Screenshot added after the first deploy: docs/screenshot.png -->
 
-- **Claim Verification**
-  - Extracts atomic claims
-  - Verifies each claim against retrieved evidence
-  - Computes a **groundedness score (0–1)**
+## How it works
 
-- **Safe Refusal**
-  - Automatically refuses to answer when evidence is insufficient
+```mermaid
+flowchart LR
+    Q[Question] --> V[Vector search<br/>bge-small, Qdrant]
+    Q --> K[Keyword search<br/>BM25]
+    V --> F[Reciprocal rank fusion]
+    K --> F
+    F --> R[Cross-encoder rerank<br/>MiniLM MS-MARCO]
+    R --> G1{Relevant enough?}
+    G1 -- no --> X[Decline, show nearest evidence]
+    G1 -- yes --> A[Stream cited answer<br/>Llama 3.3 70B]
+    A --> C[Claim check<br/>Llama 3.1 8B judge]
+    C --> G2{Grounded enough?}
+    G2 -- no --> W[Hide answer, explain why]
+    G2 -- yes --> OK[Show answer + claim ledger]
+```
 
-- **Evaluation Harness**
-  - Golden-set regression tests
-  - Measures answer correctness and citation coverage
+1. **Hybrid retrieval.** Embedding search catches paraphrases ("non-birthing parent" → "secondary caregiver"); BM25 catches exact terms like "SEV1" or "$0.67". Their rankings are merged with reciprocal rank fusion, which needs no score calibration between the two.
+2. **Reranking.** A cross-encoder reads the question and each candidate passage *together*, which is far more precise than comparing two separately computed vectors. Its score also drives the first refusal gate.
+3. **Cited generation.** The answer streams token by token. The prompt requires a citation on every factual sentence, forbids outside knowledge, and treats document text as untrusted data (a basic prompt-injection defence).
+4. **Claim verification.** A smaller, faster model extracts atomic claims and labels each one supported, partly supported or unsupported. The groundedness score is the share that checks out; below the threshold, the answer is withheld.
+5. **Graceful degradation.** If the LLM provider is down, rate-limited or not configured, ATLAS still answers by quoting the best evidence sentences, and verifies them with a lexical checker. The UI says which mode it is in.
 
-- **Full Stack (Dockerized)**
-  - FastAPI (backend)
-  - Postgres (metadata + run logs)
-  - Qdrant (vector database)
-  - Streamlit (UI)
+## Results
 
----
+Measured on [`eval/golden.jsonl`](eval/golden.jsonl): questions the documents answer directly, questions that need two facts combined, paraphrases that avoid the documents' wording, and questions the documents can't answer. CI fails the build if retrieval quality drops; the full evaluation runs weekly and after every prompt or pipeline change.
 
-## Tech Stack
+<!-- EVAL:START -->
+_Results are published here automatically after the first evaluation run._
+<!-- EVAL:END -->
 
-| Layer | Technology |
-|-----|-----------|
-| Backend | FastAPI, Python |
-| Vector DB | Qdrant |
-| Metadata DB | PostgreSQL |
-| Retrieval | BM25 + Embeddings |
-| LLM | OpenAI-compatible API |
-| UI | Streamlit |
-| Infra | Docker, Docker Compose |
+## Design decisions
 
----
+| Decision | Why |
+|---|---|
+| Hybrid retrieval with RRF instead of vectors alone | Dense retrieval misses exact identifiers and numbers; BM25 misses paraphrases. RRF combines rank positions, so no fragile score normalisation. |
+| Cross-encoder reranking | The biggest single precision gain per millisecond in RAG; its probability doubles as a calibrated "is anything relevant?" signal for refusal. |
+| Small ONNX models on CPU (FastEmbed) | The whole retrieval stack runs on a free 2-vCPU instance: no GPU, no embedding API bill, no data leaving the server. |
+| Separate verifier model | Checking claims is easier than writing answers, so an 8B model does it cheaply and quickly. Using a different model than the writer reduces correlated mistakes. |
+| Two refusal gates | Before generation (nothing relevant retrieved) saves an LLM call; after verification (answer not grounded) catches hallucinations the first gate can't. |
+| Any OpenAI-compatible provider | Groq, OpenAI, Together, vLLM or a local Ollama model: changing provider is two environment variables. |
+| Session-scoped uploads | Visitors' documents are filtered by session in both the vector store and BM25, never shown to others, and deleted after two hours. |
+| Everything traced | Each answer records per-stage timings, the rank of every candidate in every retriever, and the verdict for every claim, in the UI and in the run log. |
+
+## Run it locally
+
+```bash
+git clone https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System && cd ATLAS-Trust-Layered-GenAI-System
+cp .env.example .env          # add an LLM_API_KEY (free at console.groq.com), or leave empty for quote mode
+docker compose up --build     # http://localhost:7860
+```
+
+Without Docker:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+uvicorn atlas.main:app --reload --port 7860
+pytest                                    # 24 tests, no network or API key needed
+python -m eval.run_eval --retrieval-only  # retrieval ablation, no API key needed
+python -m eval.run_eval                   # full evaluation (needs LLM_API_KEY)
+```
+
+## Deploy your own
+
+The `Deploy` workflow publishes `main` to a Hugging Face Space whenever CI passes. In the GitHub repository settings, add:
+
+- secret `HF_TOKEN`: a Hugging Face token with write access;
+- secret `LLM_API_KEY`: your LLM provider key (synced into the Space as a secret);
+- variable `HF_SPACE`: for example `your-username/atlas`.
+
+The Docker image runs anywhere that runs containers: Render, Fly.io, Cloud Run, or a VM.
+
+## API
+
+Interactive reference at `/api/docs`.
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/ask` | Ask a question. Returns a server-sent event stream: `retrieval`, `token`, `citations`, `verification`, then `done`, with `refusal`, `withheld`, `notice` and `reset` when they apply. |
+| `POST /api/documents` | Upload a PDF, Markdown or text file to the caller's session (`X-Session-Id` header). |
+| `GET /api/documents` | Demo documents plus the caller's uploads. |
+| `DELETE /api/session` | Delete the caller's uploads. |
+| `GET /api/eval` | Latest evaluation report. |
+| `GET /api/config`, `/api/health`, `/api/stats` | Mode, models, thresholds and usage counters. |
+
+## Project layout
+
+```
+atlas/
+  ingestion.py   load PDF/Markdown/text, heading-aware chunking with stable IDs
+  models.py      embedder and cross-encoder (FastEmbed) with offline fallbacks
+  retrieval.py   Qdrant + BM25, reciprocal rank fusion, reranking, per-stage trace
+  llm.py         OpenAI-compatible client and the extractive fallback
+  prompts.py     versioned prompts for answering and verification
+  pipeline.py    refusal gates, streaming, claim verification, run logging
+  store.py       SQLAlchemy models for documents, chunks and runs
+  main.py        FastAPI app, SSE streaming, uploads, rate limiting
+web/             the interface (no build step)
+eval/            golden set, evaluation harness, published results
+corpus/          demo documents for the fictional company Lumen Fieldworks
+tests/           unit and API tests with a scripted fake LLM
+```
+
+## Limitations and next steps
+
+- The demo corpus is small (7 documents); a larger, messier corpus would stress retrieval harder.
+- Claim verification uses an LLM judge, which can itself be wrong. An NLI model trained for entailment would be a useful second opinion.
+- BM25 is rebuilt in memory, which is fine for thousands of passages; at larger scale it would move into Qdrant's sparse vectors.
+- The rate limiter is in-memory, so it assumes a single instance.
+
+## License
+
+MIT

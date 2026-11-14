@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATLAS: answers with evidence</title>
+  <meta name="description" content="Ask questions about documents and see the evidence behind every answer: hybrid retrieval, citations, claim-by-claim verification and refusal when the evidence isn't there.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231F3F8F'/><path d='M9 23 16 8l7 15M11.5 18h9' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="ATLAS home">
+        <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--blue)"/><path d="M9 23 16 8l7 15M11.5 18h9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>ATLAS</span>
+      </a>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" id="tab-ask" aria-controls="panel-ask" aria-selected="true">Ask</button>
+        <button role="tab" id="tab-eval" aria-controls="panel-eval" aria-selected="false" tabindex="-1">How well it works</button>
+        <button role="tab" id="tab-docs" aria-controls="panel-docs" aria-selected="false" tabindex="-1">Documents</button>
+      </nav>
+      <div class="mode" id="mode" title="Which language model is answering"></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ASK -->
+    <section id="panel-ask" role="tabpanel" aria-labelledby="tab-ask">
+      <div class="intro">
+        <h1>Answers that show their evidence</h1>
+        <p>Ask about the handbook, policies and product specs of Lumen Fieldworks, a fictional drone company, or <button class="linklike" data-goto="docs">upload your own document</button>. Every answer cites its sources, each claim is checked against them, and ATLAS says so when the documents don't contain the answer.</p>
+      </div>
+
+      <form class="ask" id="ask-form" autocomplete="off">
+        <label for="question" class="visually-hidden">Your question</label>
+        <textarea id="question" rows="1" maxlength="500" placeholder="What is the hotel limit per night in London?" required></textarea>
+        <button type="submit" id="ask-btn" class="primary">Ask</button>
+      </form>
+
+      <div class="suggestions" id="suggestions" aria-label="Example questions">
+        <button type="button">How long does the Falcon X2 fly with a full payload?</button>
+        <button type="button">I'm flying 7 hours to London. Which class can I book and what's my hotel limit?</button>
+        <button type="button">As the non-birthing parent, how much paid leave do I get?</button>
+        <button type="button" class="trap">Who is the CEO of Lumen Fieldworks?</button>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <article class="answer-col" aria-live="polite">
+          <div class="status" id="status"></div>
+          <div class="answer" id="answer"></div>
+          <div class="refusal" id="refusal" hidden></div>
+          <div class="withheld" id="withheld" hidden></div>
+
+          <section class="proof" id="proof" hidden>
+            <div class="proof-head">
+              <h2>Claim check</h2>
+              <span class="proof-score" id="proof-score"></span>
+            </div>
+            <div class="proof-bar" id="proof-bar" role="img"></div>
+            <ol class="claims" id="claims"></ol>
+            <p class="proof-note" id="proof-note"></p>
+          </section>
+
+          <p class="timings" id="timings"></p>
+        </article>
+
+        <aside class="evidence-col">
+          <h2>Evidence</h2>
+          <ol class="evidence" id="evidence"></ol>
+          <details class="trace" id="trace">
+            <summary>How these passages were chosen</summary>
+            <p class="trace-help">Keyword search (BM25) and meaning-based search (embeddings) each rank passages. Their rankings are merged with reciprocal rank fusion, then a cross-encoder rereads each passage with the question and gives the final relevance score.</p>
+            <div class="table-wrap"><table id="trace-table"></table></div>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <!-- EVAL -->
+    <section id="panel-eval" role="tabpanel" aria-labelledby="tab-eval" hidden>
+      <div class="intro">
+        <h1>How well it works</h1>
+        <p>ATLAS is tested on a fixed set of questions: ones the documents answer, ones that need two facts combined, paraphrases that avoid the documents' wording, and questions the documents can't answer at all. The test runs automatically on every change.</p>
+      </div>
+      <div id="eval-body"><p class="muted">Loading results…</p></div>
+    </section>
+
+    <!-- DOCS -->
+    <section id="panel-docs" role="tabpanel" aria-labelledby="tab-docs" hidden>
+      <div class="intro">
+        <h1>Documents</h1>
+        <p>Upload a PDF, Markdown or text file to ask questions about it. Your uploads are visible only in this browser session and are deleted automatically after two hours.</p>
+      </div>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".pdf,.md,.markdown,.txt">
+        <strong>Choose a file</strong> or drop it here
+        <span class="muted" id="drop-limit">PDF, Markdown or text, up to 10 MB</span>
+      </label>
+      <p class="upload-status" id="upload-status" role="status"></p>
+      <div class="docs-head">
+        <h2>Available documents</h2>
+        <button type="button" class="ghost" id="clear-uploads" hidden>Delete my uploads</button>
+      </div>
+      <ul class="docs" id="docs"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built by <a href="https://github.com/saccromcyes">Aakarsh Dutt Sharma</a>. <a href="https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System">Source code</a> and <a href="/api/docs">API reference</a>.</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

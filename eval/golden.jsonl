@@ -1,0 +1,55 @@
+{"id": "q01", "type": "answerable", "question": "How many days of paid time off do full-time employees get each year?", "expected_docs": ["employee-handbook"], "must_include": ["24"]}
+{"id": "q02", "type": "answerable", "question": "How many unused PTO days can I carry over, and when do they expire?", "expected_docs": ["employee-handbook"], "must_include": ["5|five", "31 march|march 31"]}
+{"id": "q03", "type": "answerable", "question": "How long is parental leave for a secondary caregiver?", "expected_docs": ["employee-handbook"], "must_include": ["8 weeks|eight weeks"]}
+{"id": "q04", "type": "answerable", "question": "What notice period applies to a people manager after probation?", "expected_docs": ["employee-handbook"], "must_include": ["60"]}
+{"id": "q05", "type": "answerable", "question": "How many days a week do hybrid employees need to be in the office, and which day is the company-wide office day?", "expected_docs": ["employee-handbook"], "must_include": ["three|3", "tuesday"]}
+{"id": "q06", "type": "answerable", "question": "When do I need a doctor's note for sick leave?", "expected_docs": ["employee-handbook"], "must_include": ["three|3"]}
+{"id": "q07", "type": "answerable", "question": "How long can I work from another country without extra approval?", "expected_docs": ["employee-handbook"], "must_include": ["20"]}
+{"id": "q08", "type": "answerable", "question": "What is the hotel limit per night in London?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["300"]}
+{"id": "q09", "type": "answerable", "question": "What is the daily meal per diem for international travel?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["90"]}
+{"id": "q10", "type": "answerable", "question": "Above what amount do I need a receipt for an expense?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["25"]}
+{"id": "q11", "type": "answerable", "question": "What is the mileage reimbursement rate for using my own car?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["0.67"]}
+{"id": "q12", "type": "answerable", "question": "Which tool do I use to submit expenses and what is the deadline?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["ledgerly", "30"]}
+{"id": "q13", "type": "answerable", "question": "Can I book business class for a 12-hour flight?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["vice president|vp"]}
+{"id": "q14", "type": "answerable", "question": "Is travel insurance reimbursable?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["not|never"]}
+{"id": "q15", "type": "answerable", "question": "What is the minimum password length?", "expected_docs": ["information-security-policy"], "must_include": ["14"]}
+{"id": "q16", "type": "answerable", "question": "What second factor must administrators use?", "expected_docs": ["information-security-policy"], "must_include": ["hardware security key|hardware key"]}
+{"id": "q17", "type": "answerable", "question": "Can I paste customer farm-field maps into a public chatbot?", "expected_docs": ["information-security-policy"], "must_include": ["restricted"]}
+{"id": "q18", "type": "answerable", "question": "How quickly must access be revoked when someone leaves the company?", "expected_docs": ["information-security-policy"], "must_include": ["4 hours|four hours"]}
+{"id": "q19", "type": "answerable", "question": "How do I report a phishing email and how fast?", "expected_docs": ["information-security-policy"], "must_include": ["1 hour|one hour"]}
+{"id": "q20", "type": "answerable", "question": "How fast must the on-call engineer acknowledge a SEV1 page?", "expected_docs": ["incident-response-runbook"], "must_include": ["5 minutes|five minutes"]}
+{"id": "q21", "type": "answerable", "question": "Within how many days must a postmortem be published after a SEV2?", "expected_docs": ["incident-response-runbook"], "must_include": ["5 business days|five business days"]}
+{"id": "q22", "type": "answerable", "question": "Who is allowed to issue a fleet-wide return-to-home command?", "expected_docs": ["incident-response-runbook"], "must_include": ["incident commander", "head of flight operations"]}
+{"id": "q23", "type": "answerable", "question": "How soon must customers be notified after a confirmed data breach?", "expected_docs": ["incident-response-runbook"], "must_include": ["72"]}
+{"id": "q24", "type": "answerable", "question": "What is the Falcon X2's flight time with a full payload?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["28"]}
+{"id": "q25", "type": "answerable", "question": "How accurate is the Falcon X2's RTK GPS?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["2 cm"]}
+{"id": "q26", "type": "answerable", "question": "How long does it take to charge a Falcon X2 battery to 90%?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["18"]}
+{"id": "q27", "type": "answerable", "question": "What does the Falcon X2 warranty cover for batteries?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["12 months", "600"]}
+{"id": "q28", "type": "answerable", "question": "How many hectares per hour can the Falcon X2 spray?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["22"]}
+{"id": "q29", "type": "answerable", "question": "What is the restocking fee for returning an opened drone?", "expected_docs": ["customer-support-faq"], "must_include": ["15%"]}
+{"id": "q30", "type": "answerable", "question": "What response time do Enterprise customers get from support?", "expected_docs": ["customer-support-faq"], "must_include": ["4 hours|four hours"]}
+{"id": "q31", "type": "answerable", "question": "How much does a spare battery cost?", "expected_docs": ["customer-support-faq"], "must_include": ["1,150|1150"]}
+{"id": "q32", "type": "answerable", "question": "How much is the annual learning budget?", "expected_docs": ["benefits-guide-2026"], "must_include": ["2,000|2000"]}
+{"id": "q33", "type": "answerable", "question": "What is the 401(k) match and when does it vest?", "expected_docs": ["benefits-guide-2026"], "must_include": ["4%", "immediately"]}
+{"id": "q34", "type": "answerable", "question": "When is open enrollment for 2027 benefits?", "expected_docs": ["benefits-guide-2026"], "must_include": ["2 november|november 2", "20 november|november 20"]}
+{"id": "q35", "type": "multi_hop", "question": "I am flying 7 hours to London for a conference. Which flight class can I book and what is my hotel limit?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["premium economy", "300"]}
+{"id": "q36", "type": "multi_hop", "question": "Compared with the Falcon X1, how much longer does the Falcon X2 fly when empty, and what is its empty flight time?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["9", "42"]}
+{"id": "q37", "type": "multi_hop", "question": "As a remote employee, what home-office money do I get in my first year in total, including 12 months of internet allowance?", "expected_docs": ["benefits-guide-2026"], "must_include": ["1,200|1200"]}
+{"id": "p01", "type": "paraphrase", "question": "As the non-birthing parent, how much paid time can I take after my baby arrives?", "expected_docs": ["employee-handbook"], "must_include": ["8 weeks|eight weeks"]}
+{"id": "p02", "type": "paraphrase", "question": "What's the most I can spend on a room per night when visiting Zurich?", "expected_docs": ["expense-and-travel-policy"], "must_include": ["300"]}
+{"id": "p03", "type": "paraphrase", "question": "If my work computer gets stolen, how soon do I have to tell someone?", "expected_docs": ["employee-handbook"], "must_include": ["24 hours"]}
+{"id": "p04", "type": "paraphrase", "question": "How long does the drone stay airborne when it's carrying as much as it can?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["28"]}
+{"id": "p05", "type": "paraphrase", "question": "I'm an engineer without reports and I want to quit. How much warning do I have to give?", "expected_docs": ["employee-handbook"], "must_include": ["30"]}
+{"id": "p06", "type": "paraphrase", "question": "How much do I get each month toward the gym?", "expected_docs": ["benefits-guide-2026"], "must_include": ["75"]}
+{"id": "p07", "type": "paraphrase", "question": "How far ahead can the aircraft sense something in its path?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["40"]}
+{"id": "p08", "type": "paraphrase", "question": "What does the drone do if it can't hear the remote controller anymore?", "expected_docs": ["falcon-x2-product-spec"], "must_include": ["return-to-home|return to home"]}
+{"id": "p09", "type": "paraphrase", "question": "How many free therapy appointments can I get?", "expected_docs": ["benefits-guide-2026"], "must_include": ["8|eight"]}
+{"id": "p10", "type": "paraphrase", "question": "In which month are salary raises decided?", "expected_docs": ["employee-handbook"], "must_include": ["october"]}
+{"id": "u01", "type": "unanswerable", "question": "Who is the CEO of Lumen Fieldworks?", "expected_docs": [], "must_include": []}
+{"id": "u02", "type": "unanswerable", "question": "How many employees does Lumen Fieldworks have?", "expected_docs": [], "must_include": []}
+{"id": "u03", "type": "unanswerable", "question": "Does the Falcon X2 have a thermal camera for night flights?", "expected_docs": [], "must_include": []}
+{"id": "u04", "type": "unanswerable", "question": "What is the annual dental coverage limit?", "expected_docs": [], "must_include": []}
+{"id": "u05", "type": "unanswerable", "question": "What was Lumen's revenue in 2025?", "expected_docs": [], "must_include": []}
+{"id": "u06", "type": "unanswerable", "question": "Which pesticides are approved for use with the Falcon X2 in India?", "expected_docs": [], "must_include": []}
+{"id": "u07", "type": "unanswerable", "question": "What is the capital of Australia?", "expected_docs": [], "must_include": []}
+{"id": "u08", "type": "unanswerable", "question": "How many vacation days do contractors get?", "expected_docs": [], "must_include": []}

@@ -10,3 +10,8 @@ venv/
 *.log
 pgdata/
 qdrantdata/
+.cache/
+.data/
+*.db
+.ruff_cache/
+.pytest_cache/
