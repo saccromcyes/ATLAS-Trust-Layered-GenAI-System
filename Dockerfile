@@ -1,5 +1,5 @@
 # Single-container image: runs on Hugging Face Spaces, Render, Fly.io, Cloud Run or a laptop.
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 RUN useradd -m -u 1000 user
 USER user
