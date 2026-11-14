@@ -1,7 +1,8 @@
 name: Deploy
 
-# Publishes main to the Hugging Face Space named by the HF_SPACE repository variable,
-# after CI passes and after each evaluation run (so the live results page stays current).
+# Publishes main to a Hugging Face Space after CI passes and after each evaluation run, then waits
+# until the app answers its health check. The Space is named <your HF username>/atlas unless the
+# HF_SPACE repository variable says otherwise. Needs the HF_TOKEN secret (Write access).
 on:
   workflow_run:
     workflows: ["CI", "Evaluate"]
@@ -11,26 +12,36 @@ on:
 
 concurrency:
   group: deploy
-  cancel-in-progress: true
+  cancel-in-progress: false  # never kill a deploy half-way; queue the next one
 
 jobs:
   deploy:
-    if: ${{ vars.HF_SPACE != '' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment:
       name: huggingface
-      url: https://huggingface.co/spaces/${{ vars.HF_SPACE }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
+      - name: Check for the Hugging Face token
+        if: env.HF_TOKEN == ''
+        run: echo "::warning::Add an HF_TOKEN repository secret (Write access) to deploy to Hugging Face Spaces."
       - uses: actions/checkout@v4
+        if: env.HF_TOKEN != ''
         with:
           ref: main
       - uses: actions/setup-python@v5
+        if: env.HF_TOKEN != ''
         with:
           python-version: "3.13"
-      - run: pip install "huggingface_hub>=0.30"
-      - run: python scripts/deploy_space.py
+      - if: env.HF_TOKEN != ''
+        run: pip install "huggingface_hub>=0.30"
+      - id: deploy
+        if: env.HF_TOKEN != ''
+        run: python scripts/deploy_space.py
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: ${{ vars.HF_SPACE }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
