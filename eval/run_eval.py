@@ -108,8 +108,15 @@ def evaluate_relevance_gate(kb: KnowledgeBase, golden: list[dict]) -> dict:
     """
     scores = []
     for g in golden:
-        top = kb.retrieve(g["question"]).top_relevance
-        scores.append({"id": g["id"], "type": g["type"], "top_relevance": round(top, 4)})
+        r = kb.retrieve(g["question"])
+        scores.append(
+            {
+                "id": g["id"],
+                "type": g["type"],
+                "top_relevance": round(r.top_relevance, 4),
+                "top_similarity": round(r.top_similarity, 4),
+            }
+        )
     answerable = [x["top_relevance"] for x in scores if x["type"] != "unanswerable"]
     unanswerable = [x["top_relevance"] for x in scores if x["type"] == "unanswerable"]
     table = [
@@ -272,7 +279,7 @@ def main() -> int:
     for row in report["relevance_gate"]["by_threshold"]:
         print(f"  {row}")
     for q in sorted(report["relevance_gate"]["questions"], key=lambda q: q["top_relevance"]):
-        print(f"  {q['top_relevance']:.4f}  {q['type']:<12} {q['id']}")
+        print(f"  {q['top_relevance']:.4f}  sim {q['top_similarity']:.4f}  {q['type']:<12} {q['id']}")
 
     if not args.retrieval_only:
         print("Answer evaluation…")

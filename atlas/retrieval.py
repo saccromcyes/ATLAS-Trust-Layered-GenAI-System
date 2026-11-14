@@ -60,6 +60,11 @@ class RetrievalResult:
     def top_relevance(self) -> float:
         return self.context[0].rerank_score if self.context else 0.0
 
+    @property
+    def top_similarity(self) -> float:
+        """Best embedding (cosine) similarity among the candidates: the paraphrase-tolerant signal."""
+        return max((c.vector_score or 0.0 for c in self.candidates), default=0.0)
+
 
 def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> dict[str, float]:
     """RRF (Cormack et al., 2009): sum of 1 / (k + rank) across rankings. Scale-free, so BM25
