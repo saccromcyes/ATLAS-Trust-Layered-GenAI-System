@@ -242,7 +242,7 @@ async function ask(question) {
             const r = $("#refusal");
             r.hidden = false;
             const gauge = ev.reason === "low_relevance"
-              ? `<div class="gauge">Best match relevance ${pct(ev.top_relevance)}, threshold ${pct(ev.threshold)}<div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(100, Math.round(ev.top_relevance * 100))}%"></div><div class="gauge-mark" style="left:${Math.round(ev.threshold * 100)}%"></div></div></div>`
+              ? `<div class="gauge">Best match relevance ${pct(ev.top_relevance)}, threshold ${pct(ev.threshold)}${ev.similarity_threshold != null ? `; closest meaning ${pct(ev.top_similarity)}, threshold ${pct(ev.similarity_threshold)}` : ""}<div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(100, Math.round(ev.top_relevance * 100))}%"></div><div class="gauge-mark" style="left:${Math.round(ev.threshold * 100)}%"></div></div></div>`
               : "";
             r.innerHTML = `<h3>Not in the documents</h3><p>${esc(ev.message)} The closest passages are listed under Evidence.</p>${gauge}`;
             break;

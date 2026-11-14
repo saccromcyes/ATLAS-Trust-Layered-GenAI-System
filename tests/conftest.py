@@ -24,6 +24,7 @@ def settings(tmp_path) -> Settings:
         database_url=f"sqlite:///{tmp_path / 'atlas.db'}",
         corpus_dir=str(ROOT / "corpus"),
         min_relevance=0.2,
+        min_similarity=1.0,  # hash embeddings: let the lexical reranker alone decide in tests
         rate_limit_per_10min=1000,
     )
 

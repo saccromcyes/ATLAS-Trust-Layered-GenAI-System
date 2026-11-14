@@ -97,14 +97,14 @@ def evaluate_retrieval(kb: KnowledgeBase, golden: list[dict]) -> dict:
     return {"n_questions": len(answerable), "n_passages": len(all_chunks), "by_mode": table}
 
 
-GATE_THRESHOLDS = (0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3)
+SIMILARITY_THRESHOLDS = (0.55, 0.6, 0.65, 0.7)
 
 
-def evaluate_relevance_gate(kb: KnowledgeBase, golden: list[dict]) -> dict:
-    """Score every question's best passage, to show what each refusal-gate threshold would do.
+def evaluate_relevance_gate(kb: KnowledgeBase, golden: list[dict], min_relevance: float) -> dict:
+    """Score every question's best passage, to show what each refusal-gate setting would do.
 
-    Below the threshold ATLAS refuses without calling the model. Set too high, it refuses
-    reworded questions it could answer; set too low, the model has to do all the refusing.
+    The gate refuses without calling the model. Set too strictly it refuses reworded questions
+    it could answer; set too loosely the model does all the refusing (which it can, at a cost).
     """
     scores = []
     for g in golden:
@@ -117,17 +117,27 @@ def evaluate_relevance_gate(kb: KnowledgeBase, golden: list[dict]) -> dict:
                 "top_similarity": round(r.top_similarity, 4),
             }
         )
-    answerable = [x["top_relevance"] for x in scores if x["type"] != "unanswerable"]
-    unanswerable = [x["top_relevance"] for x in scores if x["type"] == "unanswerable"]
-    table = [
-        {
-            "threshold": t,
-            "answerable_passed": round(sum(x >= t for x in answerable) / len(answerable), 3),
-            "unanswerable_stopped": round(sum(x < t for x in unanswerable) / len(unanswerable), 3),
+    answerable = [x for x in scores if x["type"] != "unanswerable"]
+    unanswerable = [x for x in scores if x["type"] == "unanswerable"]
+
+    def row(rule: str, stops, similarity: float | None) -> dict:
+        return {
+            "rule": rule,
+            "min_similarity": similarity,
+            "answerable_passed": round(sum(not stops(x) for x in answerable) / len(answerable), 3),
+            "unanswerable_stopped": round(sum(stops(x) for x in unanswerable) / len(unanswerable), 3),
         }
-        for t in GATE_THRESHOLDS
-    ]
-    return {"by_threshold": table, "questions": scores}
+
+    table = [row(f"reranker < {min_relevance:g}", lambda x: x["top_relevance"] < min_relevance, None)]
+    for sim in SIMILARITY_THRESHOLDS:
+        table.append(
+            row(
+                f"reranker < {min_relevance:g} and similarity < {sim:g}",
+                lambda x, sim=sim: x["top_relevance"] < min_relevance and x["top_similarity"] < sim,
+                sim,
+            )
+        )
+    return {"by_rule": table, "questions": scores}
 
 
 def evaluate_answers(pipeline: AnswerPipeline, golden: list[dict], pause_s: float) -> dict:
@@ -201,18 +211,19 @@ def render_markdown(report: dict) -> str:
             "",
         ]
     gate = report.get("relevance_gate")
-    if gate:
-        current = report["config"]["min_relevance"]
+    if gate and "by_rule" in gate:
+        current = report["config"].get("min_similarity")
         lines += [
-            "**Refusal gate**: share of questions on each side of the reranker-score threshold below which ATLAS refuses without calling the model.",
+            "**Refusal gate**: which questions each rule would refuse before calling the model. The rest are answered, or refused by the model itself.",
             "",
-            "| Threshold | Answerable questions let through | Unanswerable questions stopped |",
+            "| Refuse when | Answerable questions let through | Unanswerable questions stopped early |",
             "|---|---|---|",
         ]
-        for row in gate["by_threshold"]:
-            mark = "**" if abs(row["threshold"] - current) < 1e-9 else ""
+        for row in gate["by_rule"]:
+            on = row["min_similarity"] is not None and current is not None and abs(row["min_similarity"] - current) < 1e-9
+            mark = "**" if on else ""
             lines.append(
-                f"| {mark}{row['threshold']:g}{' (current)' if mark else ''}{mark} | {pct(row['answerable_passed'])} | {pct(row['unanswerable_stopped'])} |"
+                f"| {mark}{row['rule']}{' (current)' if on else ''}{mark} | {pct(row['answerable_passed'])} | {pct(row['unanswerable_stopped'])} |"
             )
         lines.append("")
     r = report["retrieval"]["by_mode"]
@@ -261,6 +272,7 @@ def main() -> int:
         "verifier": settings.llm_fast_model if llm.mode == "llm" else "lexical",
         "prompt_version": PROMPT_VERSION,
         "min_relevance": settings.min_relevance,
+        "min_similarity": settings.min_similarity,
         "min_groundedness": settings.min_groundedness,
     }
     config["summary"] = f"{config['llm']} · {config['embedder']} · {config['reranker']}"
@@ -275,8 +287,8 @@ def main() -> int:
     for mode, row in report["retrieval"]["by_mode"].items():
         print(f"  {mode:<14} {row}")
     print("Refusal gate…")
-    report["relevance_gate"] = evaluate_relevance_gate(kb, golden)
-    for row in report["relevance_gate"]["by_threshold"]:
+    report["relevance_gate"] = evaluate_relevance_gate(kb, golden, settings.min_relevance)
+    for row in report["relevance_gate"]["by_rule"]:
         print(f"  {row}")
     for q in sorted(report["relevance_gate"]["questions"], key=lambda q: q["top_relevance"]):
         print(f"  {q['top_relevance']:.4f}  sim {q['top_similarity']:.4f}  {q['type']:<12} {q['id']}")

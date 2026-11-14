@@ -134,6 +134,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "reranker": svc.reranker.name,
             "rerank_model": settings.rerank_model if svc.reranker.name == "cross-encoder" else "lexical",
             "min_relevance": settings.min_relevance,
+            "min_similarity": settings.min_similarity,
             "min_groundedness": settings.min_groundedness,
             "prompt_version": PROMPT_VERSION,
             "max_upload_mb": settings.max_upload_mb,

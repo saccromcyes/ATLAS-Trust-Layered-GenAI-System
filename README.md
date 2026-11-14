@@ -33,7 +33,7 @@ flowchart LR
 ```
 
 1. **Hybrid retrieval.** Embedding search catches paraphrases ("non-birthing parent" → "secondary caregiver"); BM25 catches exact terms like "SEV1" or "$0.67". Their rankings are merged with reciprocal rank fusion, which needs no score calibration between the two.
-2. **Reranking.** A cross-encoder reads the question and each candidate passage *together*, which is far more precise than comparing two separately computed vectors. Its score also drives the first refusal gate.
+2. **Reranking.** A cross-encoder reads the question and each candidate passage *together*, which is far more precise than comparing two separately computed vectors. Together with the embedding similarity, its score drives the first refusal gate: ATLAS refuses before calling the model only when both say nothing relevant was found. (The cross-encoder alone scored reworded questions near zero and refused questions it could answer; the evaluation below shows the trade-off for each setting.)
 3. **Cited generation.** The answer streams token by token. The prompt requires a citation on every factual sentence, forbids outside knowledge, and treats document text as untrusted data (a basic prompt-injection defence).
 4. **Claim verification.** A smaller, faster model extracts atomic claims and labels each one supported, partly supported or unsupported. The groundedness score is the share that checks out; below the threshold, the answer is withheld.
 5. **Graceful degradation.** If the LLM provider is down, rate-limited or not configured, ATLAS still answers by quoting the best evidence sentences, and verifies them with a lexical checker. The UI says which mode it is in.
