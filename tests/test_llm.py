@@ -23,3 +23,7 @@ def test_text_without_special_characters_passes_through_unchanged():
 
 def test_an_unclosed_bracket_is_not_held_forever():
     assert run("A stray 【 in a long sentence that never closes it.") == "A stray 【 in a long sentence that never closes it."
+
+
+def test_no_space_is_left_before_a_percent_sign():
+    assert run("matches 100\u202f", "% up to 4\u00a0%", " of salary [1].") == "matches 100% up to 4% of salary [1]."
