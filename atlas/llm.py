@@ -63,7 +63,11 @@ _FULLWIDTH_CITATION = re.compile(r"【(\d{1,2})(?:†[^】]*)?】")
 _PLAIN_CHARS = str.maketrans({"\u202f": " ", "\u00a0": " ", "\u2009": " ", "\u2011": "-"})
 
 
+_SPACE_BEFORE_PERCENT = re.compile(r"[\u202f\u00a0](?=%)")
+
+
 def _tidy(text: str) -> str:
+    text = _SPACE_BEFORE_PERCENT.sub("", text)
     return _FULLWIDTH_CITATION.sub(r"[\1]", text.translate(_PLAIN_CHARS)).replace("**", "")
 
 
@@ -71,20 +75,21 @@ def normalise_stream(deltas: Iterable[str]) -> Iterator[str]:
     """Rewrite model output into the plain form the pipeline parses, as it streams.
 
     gpt-oss models cite as 【1】 or 【1†L3-L5】 (their training format) rather than [1], use
-    narrow no-break spaces and hyphens inside numbers, and bold with **. A citation can arrive
-    split across deltas, so an unfinished 【… or a trailing * is held back until it completes.
+    narrow no-break spaces and hyphens inside numbers ("4\u202f%"), and bold with **. A
+    citation, a "**" or a space before "%" can arrive split across deltas, so the unfinished
+    part is held back until the next delta shows what it is.
     """
     pending = ""
     for delta in deltas:
-        pending = _tidy(pending + delta)
+        pending += delta
         cut = len(pending)
         opened = pending.rfind("【")
         if opened != -1 and "】" not in pending[opened:] and cut - opened < 24:
             cut = opened
-        elif pending.endswith("*"):
+        elif pending.endswith(("*", "\u202f", "\u00a0")):
             cut -= 1
         if cut:
-            yield pending[:cut]
+            yield _tidy(pending[:cut])
             pending = pending[cut:]
     if pending:
         yield _tidy(pending)

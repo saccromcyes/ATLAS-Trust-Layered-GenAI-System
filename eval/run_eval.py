@@ -41,12 +41,16 @@ def load_golden() -> list[dict]:
 
 
 def normalise(text: str) -> str:
-    return re.sub(r"\s+", " ", text.lower().replace("’", "'"))
+    """Compare facts, not typography: "Premium-economy" matches "premium economy", "4 %" matches "4%"."""
+    text = text.lower().replace("’", "'")
+    text = re.sub(r"(?<=\w)[-\u2010\u2011\u2013](?=\w)", " ", text)
+    text = re.sub(r"(?<=\d)\s+%", "%", text)
+    return re.sub(r"\s+", " ", text)
 
 
 def includes_all(answer: str, groups: list[str]) -> bool:
     text = normalise(answer)
-    return all(any(alt.strip() in text for alt in group.split("|")) for group in groups)
+    return all(any(normalise(alt.strip()) in text for alt in group.split("|")) for group in groups)
 
 
 def pct(x: float | None) -> str:
