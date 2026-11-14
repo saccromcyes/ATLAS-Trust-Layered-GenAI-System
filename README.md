@@ -1,7 +1,7 @@
 # ATLAS — answers that show their evidence
 
 [![CI](https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System/actions/workflows/ci.yml/badge.svg)](https://github.com/saccromcyes/ATLAS-Trust-Layered-GenAI-System/actions/workflows/ci.yml)
-[![Live demo](https://img.shields.io/badge/live%20demo-Hugging%20Face-1F3F8F)](https://huggingface.co/spaces/saccromcyes/atlas)
+[![Live demo](https://img.shields.io/badge/live%20demo-Render-1F3F8F)](https://saccromcyes-atlas.onrender.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 ATLAS is a retrieval-augmented generation (RAG) system built around one question: **can you trust the answer?**
@@ -10,7 +10,7 @@ ATLAS is a retrieval-augmented generation (RAG) system built around one question
 - After answering, a second model splits the answer into individual claims and checks each one against the evidence. Answers that don't check out are hidden.
 - When the documents don't contain the answer, ATLAS says so instead of guessing, and shows you how close the nearest passage came.
 
-**[Try the live demo →](https://huggingface.co/spaces/saccromcyes/atlas)** Ask about the bundled handbook and policies of a fictional drone company, or upload your own PDF.
+**[Try the live demo →](https://saccromcyes-atlas.onrender.com)** Ask about the bundled handbook and policies of a fictional drone company, or upload your own PDF. It runs on a free tier, so if nobody has used it for a while the first visit takes about a minute to wake up.
 
 <!-- Screenshot added after the first deploy: docs/screenshot.png -->
 
@@ -87,15 +87,11 @@ python -m eval.run_eval --retrieval-only  # retrieval ablation, no API key neede
 python -m eval.run_eval                   # full evaluation (needs LLM_API_KEY)
 ```
 
-## Deploy your own
+## Deployment
 
-The `Deploy` workflow publishes `main` to a Hugging Face Space whenever CI passes. In the GitHub repository settings, add:
+**Deployment.** The app runs on Render's free tier (512 MB of memory, a tenth of a CPU core), defined in the [Blueprint](https://github.com/saccromcyes/saccromcyes.github.io/blob/main/render.yaml) that deploys all of my demos; every push to `main` that passes CI redeploys it. The CI job *Fits Render free tier* starts the production image under exactly those limits, sends a real request, and fails if the app runs out of memory or doesn't become healthy, so a change can't silently break the live demo.
 
-- secret `HF_TOKEN`: a Hugging Face token with write access;
-- secret `LLM_API_KEY`: your LLM provider key (synced into the Space as a secret);
-- variable `HF_SPACE`: for example `your-username/atlas`.
-
-The Docker image runs anywhere that runs containers: Render, Fly.io, Cloud Run, or a VM.
+The Docker image runs anywhere that runs containers: Render, Fly.io, Cloud Run, Hugging Face Spaces, or a VM.
 
 ## API
 
