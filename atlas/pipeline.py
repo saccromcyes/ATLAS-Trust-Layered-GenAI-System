@@ -145,13 +145,16 @@ class AnswerPipeline:
             )
             return {"type": "done", "status": status, "run_id": run_id, "mode": mode, "timings": timings}
 
-        if not retrieval.context or retrieval.top_relevance < s.min_relevance:
+        off_topic = retrieval.top_relevance < s.min_relevance and retrieval.top_similarity < s.min_similarity
+        if not retrieval.context or off_topic:
             yield {
                 "type": "refusal",
                 "reason": "low_relevance",
                 "message": "I couldn't find anything in the documents that answers this, so I won't guess.",
                 "top_relevance": retrieval.top_relevance,
                 "threshold": s.min_relevance,
+                "top_similarity": retrieval.top_similarity,
+                "similarity_threshold": s.min_similarity,
             }
             yield finish("refused")
             return

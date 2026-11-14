@@ -1,5 +1,5 @@
 from atlas.llm import REFUSAL_TOKEN, ExtractiveLLM, parse_json
-from atlas.pipeline import extract_citations, groundedness, strip_invalid_citations
+from atlas.pipeline import AnswerPipeline, extract_citations, groundedness, strip_invalid_citations
 from tests.conftest import FakeLLM
 
 
@@ -25,6 +25,16 @@ def test_off_topic_question_is_refused_before_generation(make_pipeline):
     assert "refusal" in kinds(events)
     assert events[-1]["status"] == "refused"
     assert llm.calls == []  # the LLM was never asked
+
+
+def test_gate_lets_a_question_through_when_embeddings_find_it_relevant(settings, kb):
+    # Reworded questions can score near 0 with the cross-encoder; the embedding similarity
+    # catches them, so the gate refuses only when both signals are low.
+    settings.min_similarity = 0.0
+    llm = FakeLLM(answer=REFUSAL_TOKEN)
+    result = AnswerPipeline(settings, kb, llm, kb.store).answer("What is the capital of Australia?")
+    assert llm.calls == ["stream"]  # the model was asked, and it declined
+    assert result["status"] == "refused"
 
 
 def test_llm_answer_is_streamed_cited_and_verified(make_pipeline):

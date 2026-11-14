@@ -97,6 +97,49 @@ def evaluate_retrieval(kb: KnowledgeBase, golden: list[dict]) -> dict:
     return {"n_questions": len(answerable), "n_passages": len(all_chunks), "by_mode": table}
 
 
+SIMILARITY_THRESHOLDS = (0.55, 0.6, 0.65, 0.7)
+
+
+def evaluate_relevance_gate(kb: KnowledgeBase, golden: list[dict], min_relevance: float) -> dict:
+    """Score every question's best passage, to show what each refusal-gate setting would do.
+
+    The gate refuses without calling the model. Set too strictly it refuses reworded questions
+    it could answer; set too loosely the model does all the refusing (which it can, at a cost).
+    """
+    scores = []
+    for g in golden:
+        r = kb.retrieve(g["question"])
+        scores.append(
+            {
+                "id": g["id"],
+                "type": g["type"],
+                "top_relevance": round(r.top_relevance, 4),
+                "top_similarity": round(r.top_similarity, 4),
+            }
+        )
+    answerable = [x for x in scores if x["type"] != "unanswerable"]
+    unanswerable = [x for x in scores if x["type"] == "unanswerable"]
+
+    def row(rule: str, stops, similarity: float | None) -> dict:
+        return {
+            "rule": rule,
+            "min_similarity": similarity,
+            "answerable_passed": round(sum(not stops(x) for x in answerable) / len(answerable), 3),
+            "unanswerable_stopped": round(sum(stops(x) for x in unanswerable) / len(unanswerable), 3),
+        }
+
+    table = [row(f"reranker < {min_relevance:g}", lambda x: x["top_relevance"] < min_relevance, None)]
+    for sim in SIMILARITY_THRESHOLDS:
+        table.append(
+            row(
+                f"reranker < {min_relevance:g} and similarity < {sim:g}",
+                lambda x, sim=sim: x["top_relevance"] < min_relevance and x["top_similarity"] < sim,
+                sim,
+            )
+        )
+    return {"by_rule": table, "questions": scores}
+
+
 def evaluate_answers(pipeline: AnswerPipeline, golden: list[dict], pause_s: float) -> dict:
     rows = []
     for g in golden:
@@ -111,6 +154,7 @@ def evaluate_answers(pipeline: AnswerPipeline, golden: list[dict], pause_s: floa
             "answer": result["answer"],
             "groundedness": result["groundedness"],
             "cited_docs": cited_docs,
+            "top_relevance": result.get("top_relevance"),
             "latency_ms": result["timings"].get("total_ms"),
             "mode": result["mode"],
         }
@@ -166,6 +210,22 @@ def render_markdown(report: dict) -> str:
             f"| Latency p50 / p95 | {m['latency_p50_ms']} ms / {m['latency_p95_ms']} ms |",
             "",
         ]
+    gate = report.get("relevance_gate")
+    if gate and "by_rule" in gate:
+        current = report["config"].get("min_similarity")
+        lines += [
+            "**Refusal gate**: which questions each rule would refuse before calling the model. The rest are answered, or refused by the model itself.",
+            "",
+            "| Refuse when | Answerable questions let through | Unanswerable questions stopped early |",
+            "|---|---|---|",
+        ]
+        for row in gate["by_rule"]:
+            on = row["min_similarity"] is not None and current is not None and abs(row["min_similarity"] - current) < 1e-9
+            mark = "**" if on else ""
+            lines.append(
+                f"| {mark}{row['rule']}{' (current)' if on else ''}{mark} | {pct(row['answerable_passed'])} | {pct(row['unanswerable_stopped'])} |"
+            )
+        lines.append("")
     r = report["retrieval"]["by_mode"]
     lines += [
         f"**Retrieval ablation**: is the passage that states the answer in the top *k*? ({report['retrieval']['n_questions']} questions, {report['retrieval'].get('n_passages', '?')} passages)",
@@ -212,6 +272,7 @@ def main() -> int:
         "verifier": settings.llm_fast_model if llm.mode == "llm" else "lexical",
         "prompt_version": PROMPT_VERSION,
         "min_relevance": settings.min_relevance,
+        "min_similarity": settings.min_similarity,
         "min_groundedness": settings.min_groundedness,
     }
     config["summary"] = f"{config['llm']} · {config['embedder']} · {config['reranker']}"
@@ -225,6 +286,12 @@ def main() -> int:
     }
     for mode, row in report["retrieval"]["by_mode"].items():
         print(f"  {mode:<14} {row}")
+    print("Refusal gate…")
+    report["relevance_gate"] = evaluate_relevance_gate(kb, golden, settings.min_relevance)
+    for row in report["relevance_gate"]["by_rule"]:
+        print(f"  {row}")
+    for q in sorted(report["relevance_gate"]["questions"], key=lambda q: q["top_relevance"]):
+        print(f"  {q['top_relevance']:.4f}  sim {q['top_similarity']:.4f}  {q['type']:<12} {q['id']}")
 
     if not args.retrieval_only:
         print("Answer evaluation…")
@@ -242,6 +309,14 @@ def main() -> int:
             if len(fell_back) > 0.1 * len(golden):
                 print("FAIL: the language model was unavailable for too many questions; results not published.", file=sys.stderr)
                 return 1
+        # An answer withheld for citing nothing means the model's citation format changed, not that it was wrong.
+        uncited = [q["id"] for q in answers["questions"] if q["status"] == "withheld" and not q["cited_docs"]]
+        if llm.mode == "llm" and len(uncited) > 0.1 * len(golden):
+            print(
+                f"FAIL: {len(uncited)} answers cited no sources ({', '.join(uncited)}); check the citation format.",
+                file=sys.stderr,
+            )
+            return 1
         report["answers"] = answers
 
     if not args.no_write:

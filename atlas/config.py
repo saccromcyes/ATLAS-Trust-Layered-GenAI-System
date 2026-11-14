@@ -45,7 +45,11 @@ class Settings(BaseSettings):
     rrf_k: int = 60
 
     # --- Trust layer ---
-    min_relevance: float = 0.20  # reranker probability below which we refuse before generating
+    # Refuse before generating only when both retrievers agree nothing is relevant. The cross-encoder
+    # alone scores reworded questions near 0, so on its own it refused answerable questions;
+    # thresholds calibrated on eval/golden.jsonl (see "Refusal gate" in eval/results/latest.md).
+    min_relevance: float = 0.20  # cross-encoder probability
+    min_similarity: float = 0.60  # best embedding cosine similarity
     min_groundedness: float = 0.60  # share of verified claims below which the answer is withheld
 
     # --- Public demo guard rails ---
