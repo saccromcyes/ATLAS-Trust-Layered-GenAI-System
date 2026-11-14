@@ -10,7 +10,7 @@ import json
 import logging
 import math
 import re
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from typing import Protocol
 
 from atlas.config import Settings
@@ -59,6 +59,37 @@ def provider_options(base_url: str, reasoning_effort: str) -> dict:
     return options
 
 
+_FULLWIDTH_CITATION = re.compile(r"【(\d{1,2})(?:†[^】]*)?】")
+_PLAIN_CHARS = str.maketrans({"\u202f": " ", "\u00a0": " ", "\u2009": " ", "\u2011": "-"})
+
+
+def _tidy(text: str) -> str:
+    return _FULLWIDTH_CITATION.sub(r"[\1]", text.translate(_PLAIN_CHARS)).replace("**", "")
+
+
+def normalise_stream(deltas: Iterable[str]) -> Iterator[str]:
+    """Rewrite model output into the plain form the pipeline parses, as it streams.
+
+    gpt-oss models cite as 【1】 or 【1†L3-L5】 (their training format) rather than [1], use
+    narrow no-break spaces and hyphens inside numbers, and bold with **. A citation can arrive
+    split across deltas, so an unfinished 【… or a trailing * is held back until it completes.
+    """
+    pending = ""
+    for delta in deltas:
+        pending = _tidy(pending + delta)
+        cut = len(pending)
+        opened = pending.rfind("【")
+        if opened != -1 and "】" not in pending[opened:] and cut - opened < 24:
+            cut = opened
+        elif pending.endswith("*"):
+            cut -= 1
+        if cut:
+            yield pending[:cut]
+            pending = pending[cut:]
+    if pending:
+        yield _tidy(pending)
+
+
 class OpenAICompatibleLLM:
     mode = "llm"
 
@@ -78,9 +109,9 @@ class OpenAICompatibleLLM:
             response = self._client.chat.completions.create(
                 model=model, messages=messages, temperature=0.1, max_tokens=2000, stream=True, **self._options
             )
-            for event in response:
-                if event.choices and event.choices[0].delta.content:
-                    yield event.choices[0].delta.content
+            yield from normalise_stream(
+                event.choices[0].delta.content for event in response if event.choices and event.choices[0].delta.content
+            )
         except Exception as exc:
             raise LLMError(str(exc)) from exc
 
