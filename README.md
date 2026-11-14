@@ -43,7 +43,27 @@ flowchart LR
 Measured on [`eval/golden.jsonl`](eval/golden.jsonl): questions the documents answer directly, questions that need two facts combined, paraphrases that avoid the documents' wording, and questions the documents can't answer. CI fails the build if retrieval quality drops; the full evaluation runs weekly and after every prompt or pipeline change.
 
 <!-- EVAL:START -->
-_Last run 2026-11-14 · commit `5f6329c` · retrieval only · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
+_Last run 2026-11-14 · commit `8cf3d36` · openai/gpt-oss-120b · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
+
+| Metric | Result |
+|---|---|
+| Answer accuracy (47 answerable questions) | **94%** |
+| Multi-hop accuracy | 67% |
+| Correct refusals (8 unanswerable questions) | **100%** |
+| Hallucinated answers to unanswerable questions | 0 |
+| Citation accuracy | 100% |
+| Mean groundedness of shown answers | 100% |
+| Latency p50 / p95 | 1187 ms / 1710 ms |
+
+**Refusal gate**: which questions each rule would refuse before calling the model. The rest are answered, or refused by the model itself.
+
+| Refuse when | Answerable questions let through | Unanswerable questions stopped early |
+|---|---|---|
+| reranker < 0.2 | 87% | 50% |
+| reranker < 0.2 and similarity < 0.55 | 100% | 12% |
+| **reranker < 0.2 and similarity < 0.6 (current)** | 100% | 12% |
+| reranker < 0.2 and similarity < 0.65 | 92% | 25% |
+| reranker < 0.2 and similarity < 0.7 | 89% | 50% |
 
 **Retrieval ablation**: is the passage that states the answer in the top *k*? (43 questions, 59 passages)
 

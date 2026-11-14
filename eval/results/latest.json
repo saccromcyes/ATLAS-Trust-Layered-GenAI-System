@@ -1,15 +1,16 @@
 {
-  "run_at": "2026-11-14T21:52:03+00:00",
-  "commit": "5f6329c",
+  "run_at": "2026-11-14T22:33:42+00:00",
+  "commit": "8cf3d36",
   "config": {
     "embedder": "BAAI/bge-small-en-v1.5",
     "reranker": "Xenova/ms-marco-MiniLM-L-6-v2",
-    "llm": "not evaluated yet",
-    "verifier": "llama-3.1-8b-instant",
-    "prompt_version": "2026-11-v2",
+    "llm": "openai/gpt-oss-120b",
+    "verifier": "openai/gpt-oss-20b",
+    "prompt_version": "2026-11-v3",
     "min_relevance": 0.2,
+    "min_similarity": 0.6,
     "min_groundedness": 0.6,
-    "summary": "retrieval only \u00b7 BAAI/bge-small-en-v1.5 \u00b7 Xenova/ms-marco-MiniLM-L-6-v2"
+    "summary": "openai/gpt-oss-120b \u00b7 BAAI/bge-small-en-v1.5 \u00b7 Xenova/ms-marco-MiniLM-L-6-v2"
   },
   "retrieval": {
     "n_questions": 43,
@@ -40,5 +41,1247 @@
         "mrr@10": 0.961
       }
     }
-  }
+  },
+  "relevance_gate": {
+    "by_rule": [
+      {
+        "rule": "reranker < 0.2",
+        "min_similarity": null,
+        "answerable_passed": 0.872,
+        "unanswerable_stopped": 0.5
+      },
+      {
+        "rule": "reranker < 0.2 and similarity < 0.55",
+        "min_similarity": 0.55,
+        "answerable_passed": 1.0,
+        "unanswerable_stopped": 0.125
+      },
+      {
+        "rule": "reranker < 0.2 and similarity < 0.6",
+        "min_similarity": 0.6,
+        "answerable_passed": 1.0,
+        "unanswerable_stopped": 0.125
+      },
+      {
+        "rule": "reranker < 0.2 and similarity < 0.65",
+        "min_similarity": 0.65,
+        "answerable_passed": 0.915,
+        "unanswerable_stopped": 0.25
+      },
+      {
+        "rule": "reranker < 0.2 and similarity < 0.7",
+        "min_similarity": 0.7,
+        "answerable_passed": 0.894,
+        "unanswerable_stopped": 0.5
+      }
+    ],
+    "questions": [
+      {
+        "id": "q01",
+        "type": "answerable",
+        "top_relevance": 0.9999,
+        "top_similarity": 0.8117
+      },
+      {
+        "id": "q02",
+        "type": "answerable",
+        "top_relevance": 0.9993,
+        "top_similarity": 0.768
+      },
+      {
+        "id": "q03",
+        "type": "answerable",
+        "top_relevance": 1.0,
+        "top_similarity": 0.8988
+      },
+      {
+        "id": "q04",
+        "type": "answerable",
+        "top_relevance": 0.9995,
+        "top_similarity": 0.8466
+      },
+      {
+        "id": "q05",
+        "type": "answerable",
+        "top_relevance": 0.9995,
+        "top_similarity": 0.7792
+      },
+      {
+        "id": "q06",
+        "type": "answerable",
+        "top_relevance": 0.979,
+        "top_similarity": 0.7921
+      },
+      {
+        "id": "q07",
+        "type": "answerable",
+        "top_relevance": 0.893,
+        "top_similarity": 0.6404
+      },
+      {
+        "id": "q08",
+        "type": "answerable",
+        "top_relevance": 0.9992,
+        "top_similarity": 0.8089
+      },
+      {
+        "id": "q09",
+        "type": "answerable",
+        "top_relevance": 0.9996,
+        "top_similarity": 0.8832
+      },
+      {
+        "id": "q10",
+        "type": "answerable",
+        "top_relevance": 0.9912,
+        "top_similarity": 0.7764
+      },
+      {
+        "id": "q11",
+        "type": "answerable",
+        "top_relevance": 0.9969,
+        "top_similarity": 0.8308
+      },
+      {
+        "id": "q12",
+        "type": "answerable",
+        "top_relevance": 0.9942,
+        "top_similarity": 0.8003
+      },
+      {
+        "id": "q13",
+        "type": "answerable",
+        "top_relevance": 0.8668,
+        "top_similarity": 0.7966
+      },
+      {
+        "id": "q14",
+        "type": "answerable",
+        "top_relevance": 0.9983,
+        "top_similarity": 0.7875
+      },
+      {
+        "id": "q15",
+        "type": "answerable",
+        "top_relevance": 0.6139,
+        "top_similarity": 0.7427
+      },
+      {
+        "id": "q16",
+        "type": "answerable",
+        "top_relevance": 0.9915,
+        "top_similarity": 0.7026
+      },
+      {
+        "id": "q17",
+        "type": "answerable",
+        "top_relevance": 0.9759,
+        "top_similarity": 0.6102
+      },
+      {
+        "id": "q18",
+        "type": "answerable",
+        "top_relevance": 0.999,
+        "top_similarity": 0.7854
+      },
+      {
+        "id": "q19",
+        "type": "answerable",
+        "top_relevance": 0.9994,
+        "top_similarity": 0.8755
+      },
+      {
+        "id": "q20",
+        "type": "answerable",
+        "top_relevance": 0.9981,
+        "top_similarity": 0.7506
+      },
+      {
+        "id": "q21",
+        "type": "answerable",
+        "top_relevance": 0.9999,
+        "top_similarity": 0.8959
+      },
+      {
+        "id": "q22",
+        "type": "answerable",
+        "top_relevance": 0.9991,
+        "top_similarity": 0.7499
+      },
+      {
+        "id": "q23",
+        "type": "answerable",
+        "top_relevance": 0.9999,
+        "top_similarity": 0.8963
+      },
+      {
+        "id": "q24",
+        "type": "answerable",
+        "top_relevance": 0.9995,
+        "top_similarity": 0.8341
+      },
+      {
+        "id": "q25",
+        "type": "answerable",
+        "top_relevance": 0.9995,
+        "top_similarity": 0.8158
+      },
+      {
+        "id": "q26",
+        "type": "answerable",
+        "top_relevance": 0.9999,
+        "top_similarity": 0.8325
+      },
+      {
+        "id": "q27",
+        "type": "answerable",
+        "top_relevance": 0.9994,
+        "top_similarity": 0.8688
+      },
+      {
+        "id": "q28",
+        "type": "answerable",
+        "top_relevance": 0.9999,
+        "top_similarity": 0.8999
+      },
+      {
+        "id": "q29",
+        "type": "answerable",
+        "top_relevance": 0.999,
+        "top_similarity": 0.8816
+      },
+      {
+        "id": "q30",
+        "type": "answerable",
+        "top_relevance": 1.0,
+        "top_similarity": 0.8969
+      },
+      {
+        "id": "q31",
+        "type": "answerable",
+        "top_relevance": 0.9996,
+        "top_similarity": 0.7836
+      },
+      {
+        "id": "q32",
+        "type": "answerable",
+        "top_relevance": 0.9993,
+        "top_similarity": 0.8387
+      },
+      {
+        "id": "q33",
+        "type": "answerable",
+        "top_relevance": 0.991,
+        "top_similarity": 0.7539
+      },
+      {
+        "id": "q34",
+        "type": "answerable",
+        "top_relevance": 1.0,
+        "top_similarity": 0.9117
+      },
+      {
+        "id": "q35",
+        "type": "multi_hop",
+        "top_relevance": 0.0253,
+        "top_similarity": 0.7417
+      },
+      {
+        "id": "q36",
+        "type": "multi_hop",
+        "top_relevance": 0.9998,
+        "top_similarity": 0.8332
+      },
+      {
+        "id": "q37",
+        "type": "multi_hop",
+        "top_relevance": 0.9851,
+        "top_similarity": 0.839
+      },
+      {
+        "id": "p01",
+        "type": "paraphrase",
+        "top_relevance": 0.5378,
+        "top_similarity": 0.7106
+      },
+      {
+        "id": "p02",
+        "type": "paraphrase",
+        "top_relevance": 0.9625,
+        "top_similarity": 0.7296
+      },
+      {
+        "id": "p03",
+        "type": "paraphrase",
+        "top_relevance": 0.3326,
+        "top_similarity": 0.7122
+      },
+      {
+        "id": "p04",
+        "type": "paraphrase",
+        "top_relevance": 0.6491,
+        "top_similarity": 0.6931
+      },
+      {
+        "id": "p05",
+        "type": "paraphrase",
+        "top_relevance": 0.0001,
+        "top_similarity": 0.622
+      },
+      {
+        "id": "p06",
+        "type": "paraphrase",
+        "top_relevance": 0.86,
+        "top_similarity": 0.7689
+      },
+      {
+        "id": "p07",
+        "type": "paraphrase",
+        "top_relevance": 0.0002,
+        "top_similarity": 0.6884
+      },
+      {
+        "id": "p08",
+        "type": "paraphrase",
+        "top_relevance": 0.0008,
+        "top_similarity": 0.6396
+      },
+      {
+        "id": "p09",
+        "type": "paraphrase",
+        "top_relevance": 0.0017,
+        "top_similarity": 0.6222
+      },
+      {
+        "id": "p10",
+        "type": "paraphrase",
+        "top_relevance": 0.0276,
+        "top_similarity": 0.64
+      },
+      {
+        "id": "u01",
+        "type": "unanswerable",
+        "top_relevance": 0.7608,
+        "top_similarity": 0.7467
+      },
+      {
+        "id": "u02",
+        "type": "unanswerable",
+        "top_relevance": 0.9784,
+        "top_similarity": 0.8056
+      },
+      {
+        "id": "u03",
+        "type": "unanswerable",
+        "top_relevance": 0.1679,
+        "top_similarity": 0.6872
+      },
+      {
+        "id": "u04",
+        "type": "unanswerable",
+        "top_relevance": 0.0,
+        "top_similarity": 0.6441
+      },
+      {
+        "id": "u05",
+        "type": "unanswerable",
+        "top_relevance": 0.9284,
+        "top_similarity": 0.6548
+      },
+      {
+        "id": "u06",
+        "type": "unanswerable",
+        "top_relevance": 0.619,
+        "top_similarity": 0.7579
+      },
+      {
+        "id": "u07",
+        "type": "unanswerable",
+        "top_relevance": 0.0,
+        "top_similarity": 0.4824
+      },
+      {
+        "id": "u08",
+        "type": "unanswerable",
+        "top_relevance": 0.0239,
+        "top_similarity": 0.6999
+      }
+    ]
+  },
+  "answers": {
+    "metrics": {
+      "answer_accuracy": 0.936,
+      "multi_hop_accuracy": 0.667,
+      "refusal_accuracy": 1.0,
+      "false_refusal_rate": 0.021,
+      "hallucinated_answers": 0,
+      "citation_accuracy": 1.0,
+      "mean_groundedness": 1.0,
+      "latency_p50_ms": 1187,
+      "latency_p95_ms": 1710
+    },
+    "questions": [
+      {
+        "id": "q01",
+        "type": "answerable",
+        "question": "How many days of paid time off do full-time employees get each year?",
+        "status": "answered",
+        "answer": "Full-time employees receive 24 days of paid time off each calendar year [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.9999,
+        "latency_ms": 1422.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "answerable",
+        "question": "How many unused PTO days can I carry over, and when do they expire?",
+        "status": "answered",
+        "answer": "You can carry over up to 5 unused PTO days into the next year, and those carried-over days expire on 31 March. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.9993,
+        "latency_ms": 1336.6,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "answerable",
+        "question": "How long is parental leave for a secondary caregiver?",
+        "status": "answered",
+        "answer": "Secondary caregivers receive eight weeks of fully paid parental leave [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 1.0,
+        "latency_ms": 1465.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "answerable",
+        "question": "What notice period applies to a people manager after probation?",
+        "status": "answered",
+        "answer": "After probation, the notice period for people managers and directors is 60 days[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.9995,
+        "latency_ms": 1546.6,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "answerable",
+        "question": "How many days a week do hybrid employees need to be in the office, and which day is the company-wide office day?",
+        "status": "answered",
+        "answer": "Hybrid employees are expected to be in a Lumen office at least three days per week, and Tuesday is the company-wide in-office day [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.9995,
+        "latency_ms": 1470.7,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "answerable",
+        "question": "When do I need a doctor's note for sick leave?",
+        "status": "answered",
+        "answer": "A doctor's note is required only for sick-leave absences that exceed three consecutive working days[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.979,
+        "latency_ms": 1214.8,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "answerable",
+        "question": "How long can I work from another country without extra approval?",
+        "status": "withheld",
+        "answer": "You may work from another country for up to 20 working days per calendar year without needing additional approval[1].",
+        "groundedness": 0.5,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.893,
+        "latency_ms": 1335.3,
+        "mode": "llm",
+        "correct": false,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "answerable",
+        "question": "What is the hotel limit per night in London?",
+        "status": "answered",
+        "answer": "The hotel limit in London is $300 per night before taxes [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9992,
+        "latency_ms": 1000.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "answerable",
+        "question": "What is the daily meal per diem for international travel?",
+        "status": "answered",
+        "answer": "The daily meal per diem for international travel is $90 per day [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9996,
+        "latency_ms": 988.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "answerable",
+        "question": "Above what amount do I need a receipt for an expense?",
+        "status": "answered",
+        "answer": "A receipt is required for every expense that exceeds $25 [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9912,
+        "latency_ms": 1043.7,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "answerable",
+        "question": "What is the mileage reimbursement rate for using my own car?",
+        "status": "answered",
+        "answer": "The mileage reimbursement rate for using a personal car is $0.67 per mile[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9969,
+        "latency_ms": 951.5,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "answerable",
+        "question": "Which tool do I use to submit expenses and what is the deadline?",
+        "status": "answered",
+        "answer": "You submit expenses through Ledgerly, and they must be entered within 30 days of the expense date[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9942,
+        "latency_ms": 972.5,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "answerable",
+        "question": "Can I book business class for a 12-hour flight?",
+        "status": "answered",
+        "answer": "Yes, a business-class ticket can be booked for a flight longer than 10 hours, but it requires prior approval from a Vice President. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.8668,
+        "latency_ms": 1382.7,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "answerable",
+        "question": "Is travel insurance reimbursable?",
+        "status": "answered",
+        "answer": "Travel insurance is never reimbursed according to the policy. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9983,
+        "latency_ms": 1237.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "answerable",
+        "question": "What is the minimum password length?",
+        "status": "answered",
+        "answer": "The policy requires passwords to be at least 14 characters long[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "information-security-policy"
+        ],
+        "top_relevance": 0.6139,
+        "latency_ms": 981.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "answerable",
+        "question": "What second factor must administrators use?",
+        "status": "answered",
+        "answer": "Administrators must use a hardware security key as their second factor for multi-factor authentication. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "information-security-policy"
+        ],
+        "top_relevance": 0.9915,
+        "latency_ms": 1397.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q17",
+        "type": "answerable",
+        "question": "Can I paste customer farm-field maps into a public chatbot?",
+        "status": "answered",
+        "answer": "No. Customer farm-field maps are classified as Restricted data, and Restricted data must never be pasted into third-party AI tools or public chatbots[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "information-security-policy"
+        ],
+        "top_relevance": 0.9759,
+        "latency_ms": 1225.8,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q18",
+        "type": "answerable",
+        "question": "How quickly must access be revoked when someone leaves the company?",
+        "status": "answered",
+        "answer": "Access must be revoked within 4 hours of the employee\u2019s last working hour [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "information-security-policy"
+        ],
+        "top_relevance": 0.999,
+        "latency_ms": 1014.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q19",
+        "type": "answerable",
+        "question": "How do I report a phishing email and how fast?",
+        "status": "answered",
+        "answer": "Report the suspected phishing email using the \u201cReport phishing\u201d button in the mail client or by posting it in the #sec-report channel, and do so within 1 hour of receipt [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "information-security-policy"
+        ],
+        "top_relevance": 0.9994,
+        "latency_ms": 1172.3,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q20",
+        "type": "answerable",
+        "question": "How fast must the on-call engineer acknowledge a SEV1 page?",
+        "status": "answered",
+        "answer": "The on-call engineer must acknowledge a SEV1 page within 5 minutes[1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "incident-response-runbook"
+        ],
+        "top_relevance": 0.9981,
+        "latency_ms": 1072.5,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q21",
+        "type": "answerable",
+        "question": "Within how many days must a postmortem be published after a SEV2?",
+        "status": "answered",
+        "answer": "A postmortem must be published within 5 business days of resolution for a SEV2 incident. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "incident-response-runbook"
+        ],
+        "top_relevance": 0.9999,
+        "latency_ms": 1329.0,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q22",
+        "type": "answerable",
+        "question": "Who is allowed to issue a fleet-wide return-to-home command?",
+        "status": "answered",
+        "answer": "Only the Incident Commander (IC) or the Head of Flight Operations may issue a fleet-wide return-to-home command. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "incident-response-runbook"
+        ],
+        "top_relevance": 0.9991,
+        "latency_ms": 1343.6,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "answerable",
+        "question": "How soon must customers be notified after a confirmed data breach?",
+        "status": "answered",
+        "answer": "Customers must be notified within 72 hours of the breach being confirmed [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "incident-response-runbook"
+        ],
+        "top_relevance": 0.9999,
+        "latency_ms": 1131.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "answerable",
+        "question": "What is the Falcon X2's flight time with a full payload?",
+        "status": "answered",
+        "answer": "The Falcon X2 can fly for 28 minutes when carrying its maximum payload of 10 kg[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9995,
+        "latency_ms": 1102.1,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "answerable",
+        "question": "How accurate is the Falcon X2's RTK GPS?",
+        "status": "answered",
+        "answer": "The Falcon X2\u2019s RTK GPS provides horizontal positioning accuracy of plus or minus 2 cm [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9995,
+        "latency_ms": 1339.5,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "answerable",
+        "question": "How long does it take to charge a Falcon X2 battery to 90%?",
+        "status": "answered",
+        "answer": "It takes about 18 minutes to charge a Falcon X2 battery from 0 % to 90 % using the Lumen Rapid Charger[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9999,
+        "latency_ms": 1109.5,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "answerable",
+        "question": "What does the Falcon X2 warranty cover for batteries?",
+        "status": "answered",
+        "answer": "The warranty covers batteries for 12 months or up to 600 charge cycles, whichever occurs first[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9994,
+        "latency_ms": 1137.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "answerable",
+        "question": "How many hectares per hour can the Falcon X2 spray?",
+        "status": "answered",
+        "answer": "The Falcon X2 can treat up to 22 hectares per hour. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9999,
+        "latency_ms": 1367.0,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "answerable",
+        "question": "What is the restocking fee for returning an opened drone?",
+        "status": "answered",
+        "answer": "The restocking fee for returning an opened drone is 15% of the purchase price[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "customer-support-faq"
+        ],
+        "top_relevance": 0.999,
+        "latency_ms": 1621.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "answerable",
+        "question": "What response time do Enterprise customers get from support?",
+        "status": "answered",
+        "answer": "Enterprise customers receive a guaranteed first response within 4 hours, 24 hours a day, every day of the year [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "customer-support-faq"
+        ],
+        "top_relevance": 1.0,
+        "latency_ms": 1883.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q31",
+        "type": "answerable",
+        "question": "How much does a spare battery cost?",
+        "status": "answered",
+        "answer": "Spare batteries cost $1,150 each [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "customer-support-faq"
+        ],
+        "top_relevance": 0.9996,
+        "latency_ms": 1069.1,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q32",
+        "type": "answerable",
+        "question": "How much is the annual learning budget?",
+        "status": "answered",
+        "answer": "The annual learning budget is $2,000 per calendar year for each employee [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 0.9993,
+        "latency_ms": 1675.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q33",
+        "type": "answerable",
+        "question": "What is the 401(k) match and when does it vest?",
+        "status": "answered",
+        "answer": "Lumen matches 100 % of an employee\u2019s 401(k) contributions up to 4 % of base salary, and the matching contributions vest immediately[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 0.991,
+        "latency_ms": 1709.8,
+        "mode": "llm",
+        "correct": false,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q34",
+        "type": "answerable",
+        "question": "When is open enrollment for 2027 benefits?",
+        "status": "answered",
+        "answer": "Open enrollment for 2027 benefits runs from 2 November to 20 November 2026. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 1.0,
+        "latency_ms": 1045.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q35",
+        "type": "multi_hop",
+        "question": "I am flying 7 hours to London for a conference. Which flight class can I book and what is my hotel limit?",
+        "status": "answered",
+        "answer": "You may book a premium-economy seat for the 7-hour flight [1]. Because London is listed as a high-cost city, your hotel limit is $300 per night before taxes [2].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy",
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.0253,
+        "latency_ms": 1872.2,
+        "mode": "llm",
+        "correct": false,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q36",
+        "type": "multi_hop",
+        "question": "Compared with the Falcon X1, how much longer does the Falcon X2 fly when empty, and what is its empty flight time?",
+        "status": "answered",
+        "answer": "The Falcon X2 flies 9 minutes longer when empty than the Falcon X1, and its empty flight time is 42 minutes[1][2]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec",
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.9998,
+        "latency_ms": 1104.7,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "q37",
+        "type": "multi_hop",
+        "question": "As a remote employee, what home-office money do I get in my first year in total, including 12 months of internet allowance?",
+        "status": "answered",
+        "answer": "You receive a one-time home-office stipend of $600 and an internet allowance of $50 each month; over 12 months the internet allowance totals $600 (50 \u00d7 12)[1]. Adding these amounts gives a total of $1,200 for your first year[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 0.9851,
+        "latency_ms": 1454.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p01",
+        "type": "paraphrase",
+        "question": "As the non-birthing parent, how much paid time can I take after my baby arrives?",
+        "status": "answered",
+        "answer": "Secondary (non-birthing) caregivers receive eight weeks of fully paid parental leave after the birth of a child [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.5378,
+        "latency_ms": 1388.9,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p02",
+        "type": "paraphrase",
+        "question": "What's the most I can spend on a room per night when visiting Zurich?",
+        "status": "answered",
+        "answer": "The maximum hotel expense per night in Zurich is $300 [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "expense-and-travel-policy"
+        ],
+        "top_relevance": 0.9625,
+        "latency_ms": 949.4,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p03",
+        "type": "paraphrase",
+        "question": "If my work computer gets stolen, how soon do I have to tell someone?",
+        "status": "answered",
+        "answer": "You must report a stolen work computer to IT within 24 hours of the loss [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.3326,
+        "latency_ms": 1187.3,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p04",
+        "type": "paraphrase",
+        "question": "How long does the drone stay airborne when it's carrying as much as it can?",
+        "status": "answered",
+        "answer": "The Falcon X2 can stay airborne for 28 minutes when carrying its maximum payload of 10 kg[2].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.6491,
+        "latency_ms": 2335.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p05",
+        "type": "paraphrase",
+        "question": "I'm an engineer without reports and I want to quit. How much warning do I have to give?",
+        "status": "answered",
+        "answer": "After completing the 90-day probation, an engineer who is an individual contributor must give 30 days\u2019 notice to resign. [2]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.0001,
+        "latency_ms": 1223.3,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p06",
+        "type": "paraphrase",
+        "question": "How much do I get each month toward the gym?",
+        "status": "answered",
+        "answer": "You receive a $75 per-month wellness allowance that can be applied to gym memberships. [1]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 0.86,
+        "latency_ms": 1671.0,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p07",
+        "type": "paraphrase",
+        "question": "How far ahead can the aircraft sense something in its path?",
+        "status": "answered",
+        "answer": "The drone\u2019s forward and rear radar can detect obstacles up to 40 metres away in its flight path[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.0002,
+        "latency_ms": 931.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p08",
+        "type": "paraphrase",
+        "question": "What does the drone do if it can't hear the remote controller anymore?",
+        "status": "answered",
+        "answer": "If the control link is lost for more than 10 seconds, the drone automatically initiates a return-to-home maneuver. [3]",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "falcon-x2-product-spec"
+        ],
+        "top_relevance": 0.0008,
+        "latency_ms": 1185.3,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p09",
+        "type": "paraphrase",
+        "question": "How many free therapy appointments can I get?",
+        "status": "answered",
+        "answer": "You can receive up to 8 free, confidential counselling (therapy) sessions per issue each year[1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "benefits-guide-2026"
+        ],
+        "top_relevance": 0.0017,
+        "latency_ms": 1455.2,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "p10",
+        "type": "paraphrase",
+        "question": "In which month are salary raises decided?",
+        "status": "answered",
+        "answer": "Salary raises are decided in October, as part of the October compensation cycle [1].",
+        "groundedness": 1.0,
+        "cited_docs": [
+          "employee-handbook"
+        ],
+        "top_relevance": 0.0276,
+        "latency_ms": 966.0,
+        "mode": "llm",
+        "correct": true,
+        "citation_accuracy": 1.0
+      },
+      {
+        "id": "u01",
+        "type": "unanswerable",
+        "question": "Who is the CEO of Lumen Fieldworks?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.7608,
+        "latency_ms": 680.1,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u02",
+        "type": "unanswerable",
+        "question": "How many employees does Lumen Fieldworks have?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.9784,
+        "latency_ms": 1377.0,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u03",
+        "type": "unanswerable",
+        "question": "Does the Falcon X2 have a thermal camera for night flights?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.1679,
+        "latency_ms": 983.5,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u04",
+        "type": "unanswerable",
+        "question": "What is the annual dental coverage limit?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.0,
+        "latency_ms": 472.8,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u05",
+        "type": "unanswerable",
+        "question": "What was Lumen's revenue in 2025?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.9284,
+        "latency_ms": 634.4,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u06",
+        "type": "unanswerable",
+        "question": "Which pesticides are approved for use with the Falcon X2 in India?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.619,
+        "latency_ms": 616.2,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u07",
+        "type": "unanswerable",
+        "question": "What is the capital of Australia?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.0,
+        "latency_ms": 127.4,
+        "mode": "llm",
+        "correct": true
+      },
+      {
+        "id": "u08",
+        "type": "unanswerable",
+        "question": "How many vacation days do contractors get?",
+        "status": "refused",
+        "answer": "",
+        "groundedness": null,
+        "cited_docs": [],
+        "top_relevance": 0.0239,
+        "latency_ms": 537.8,
+        "mode": "llm",
+        "correct": true
+      }
+    ],
+    "n_answerable": 47,
+    "n_unanswerable": 8
+  },
+  "answers_run_at": "2026-11-14T22:33:42+00:00"
 }
