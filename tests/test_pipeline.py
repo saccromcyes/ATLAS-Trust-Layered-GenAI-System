@@ -86,3 +86,11 @@ def test_parse_json_tolerates_fences_and_prose():
 def test_runs_are_logged(make_pipeline, kb):
     make_pipeline(ExtractiveLLM()).answer("What is the minimum password length?")
     assert kb.store.stats()["questions_answered"] == 1
+
+
+def test_provider_options_for_reasoning_models():
+    from atlas.llm import provider_options
+
+    groq = provider_options("https://api.groq.com/openai/v1", "low")
+    assert groq == {"reasoning_effort": "low", "extra_body": {"include_reasoning": False}}
+    assert provider_options("https://api.openai.com/v1", "") == {}

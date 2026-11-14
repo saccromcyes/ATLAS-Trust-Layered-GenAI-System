@@ -25,8 +25,8 @@ flowchart LR
     F --> R[Cross-encoder rerank<br/>MiniLM MS-MARCO]
     R --> G1{Relevant enough?}
     G1 -- no --> X[Decline, show nearest evidence]
-    G1 -- yes --> A[Stream cited answer<br/>Llama 3.3 70B]
-    A --> C[Claim check<br/>Llama 3.1 8B judge]
+    G1 -- yes --> A[Stream cited answer<br/>gpt-oss-120b]
+    A --> C[Claim check<br/>gpt-oss-20b judge]
     C --> G2{Grounded enough?}
     G2 -- no --> W[Hide answer, explain why]
     G2 -- yes --> OK[Show answer + claim ledger]
@@ -43,17 +43,7 @@ flowchart LR
 Measured on [`eval/golden.jsonl`](eval/golden.jsonl): questions the documents answer directly, questions that need two facts combined, paraphrases that avoid the documents' wording, and questions the documents can't answer. CI fails the build if retrieval quality drops; the full evaluation runs weekly and after every prompt or pipeline change.
 
 <!-- EVAL:START -->
-_Last run 2026-11-14 · commit `5f6329c` · llama-3.3-70b-versatile · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
-
-| Metric | Result |
-|---|---|
-| Answer accuracy (47 answerable questions) | **60%** |
-| Multi-hop accuracy | 0% |
-| Correct refusals (8 unanswerable questions) | **75%** |
-| Hallucinated answers to unanswerable questions | 2 |
-| Citation accuracy | 98% |
-| Mean groundedness of shown answers | 100% |
-| Latency p50 / p95 | 413 ms / 474 ms |
+_Last run 2026-11-14 · commit `5f6329c` · retrieval only · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
 
 **Retrieval ablation**: is the passage that states the answer in the top *k*? (43 questions, 59 passages)
 

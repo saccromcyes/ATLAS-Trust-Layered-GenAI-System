@@ -48,6 +48,17 @@ def parse_json(text: str) -> dict:
         raise
 
 
+def provider_options(base_url: str, reasoning_effort: str) -> dict:
+    """Extra request options. gpt-oss models reason before answering: keep that short, and on Groq
+    leave the reasoning text out of the response (it still counts toward the output tokens)."""
+    options: dict = {}
+    if reasoning_effort:
+        options["reasoning_effort"] = reasoning_effort
+    if "groq.com" in base_url:
+        options["extra_body"] = {"include_reasoning": False}
+    return options
+
+
 class OpenAICompatibleLLM:
     mode = "llm"
 
@@ -58,13 +69,14 @@ class OpenAICompatibleLLM:
             base_url=settings.llm_base_url,
             api_key=settings.llm_api_key,
             timeout=settings.llm_timeout_s,
-            max_retries=2,
+            max_retries=settings.llm_max_retries,
         )
+        self._options = provider_options(settings.llm_base_url, settings.llm_reasoning_effort)
 
     def stream(self, messages: list[dict], model: str) -> Iterator[str]:
         try:
             response = self._client.chat.completions.create(
-                model=model, messages=messages, temperature=0.1, max_tokens=700, stream=True
+                model=model, messages=messages, temperature=0.1, max_tokens=2000, stream=True, **self._options
             )
             for event in response:
                 if event.choices and event.choices[0].delta.content:
@@ -78,8 +90,9 @@ class OpenAICompatibleLLM:
                 model=model,
                 messages=messages,
                 temperature=0.0,
-                max_tokens=900,
+                max_tokens=2500,
                 response_format={"type": "json_object"},
+                **self._options,
             )
             return parse_json(response.choices[0].message.content or "{}")
         except Exception as exc:
