@@ -232,8 +232,17 @@ def main() -> int:
         answers = evaluate_answers(pipeline, golden, args.pause)
         answers["n_answerable"] = sum(g["type"] != "unanswerable" for g in golden)
         answers["n_unanswerable"] = sum(g["type"] == "unanswerable" for g in golden)
-        report["answers"] = answers
         print(json.dumps(answers["metrics"], indent=2))
+        # Never publish LLM metrics that were really produced by the extractive fallback.
+        fell_back = [q["id"] for q in answers["questions"] if q["mode"] == "fallback"]
+        if llm.mode == "llm" and fell_back:
+            print(
+                f"{len(fell_back)} of {len(golden)} answers fell back to extractive mode: {', '.join(fell_back)}", file=sys.stderr
+            )
+            if len(fell_back) > 0.1 * len(golden):
+                print("FAIL: the language model was unavailable for too many questions; results not published.", file=sys.stderr)
+                return 1
+        report["answers"] = answers
 
     if not args.no_write:
         RESULTS.mkdir(parents=True, exist_ok=True)
