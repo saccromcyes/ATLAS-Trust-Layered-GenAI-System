@@ -1,14 +1,14 @@
-_Last run 2026-11-14 · commit `8cf3d36` · openai/gpt-oss-120b · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
+_Last run 2026-11-16 · commit `59f1d98` · openai/gpt-oss-120b · BAAI/bge-small-en-v1.5 · Xenova/ms-marco-MiniLM-L-6-v2_
 
 | Metric | Result |
 |---|---|
-| Answer accuracy (47 answerable questions) | **94%** |
-| Multi-hop accuracy | 67% |
+| Answer accuracy (47 answerable questions) | **100%** |
+| Multi-hop accuracy | 100% |
 | Correct refusals (8 unanswerable questions) | **100%** |
 | Hallucinated answers to unanswerable questions | 0 |
 | Citation accuracy | 100% |
-| Mean groundedness of shown answers | 100% |
-| Latency p50 / p95 | 1187 ms / 1710 ms |
+| Mean groundedness of shown answers | 99% |
+| Latency p50 / p95 | 1249 ms / 1750 ms |
 
 **Refusal gate**: which questions each rule would refuse before calling the model. The rest are answered, or refused by the model itself.
 
